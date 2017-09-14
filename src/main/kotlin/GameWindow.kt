@@ -1,11 +1,13 @@
 import javafx.application.Application
+import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import model.*
 import org.itheima.kotlin.game.core.Window
 import java.io.File
 
 class GameWindow : Window(title = "坦克大战", width = Config.gameWidth, height = Config.gameHeight) {
-    val views = arrayListOf<View>()
+    private val views = arrayListOf<View>()
+    private lateinit var tank : Tank
 
     override fun onCreate() {
         val file = File(javaClass.getResource("/map/1.map").path)
@@ -26,6 +28,9 @@ class GameWindow : Window(title = "坦克大战", width = Config.gameWidth, heig
             lineNumber++
         }
 
+        tank = Tank(10*Config.block,12*Config.block)
+        views.add(tank)
+
     }
 
     override fun onDisplay() {
@@ -33,6 +38,24 @@ class GameWindow : Window(title = "坦克大战", width = Config.gameWidth, heig
     }
 
     override fun onKeyPressed(event: KeyEvent) {
+        when (event.code) {
+            KeyCode.W -> {
+                tank.move(Directions.UP)
+            }
+
+            KeyCode.S -> {
+                tank.move(Directions.DOWN)
+            }
+
+            KeyCode.A -> {
+                tank.move(Directions.LEFT)
+            }
+
+            KeyCode.D -> {
+                tank.move(Directions.RIGHT)
+            }
+
+        }
     }
 
     override fun onRefresh() {
