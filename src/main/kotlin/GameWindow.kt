@@ -1,3 +1,5 @@
+import business.Blockable
+import business.Moveable
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
@@ -59,6 +61,19 @@ class GameWindow : Window(title = "坦克大战", width = Config.gameWidth, heig
     }
 
     override fun onRefresh() {
+        //碰撞检测
+        views.filter { it is Moveable }.forEach { move ->
+            move as Moveable
+            var badDirection : Directions? = null
+            views.filter { it is Blockable }.forEach blockTag@ { block ->
+                block as Blockable
+                val direction = move.willColilision(block)
+                direction?.let {
+                    badDirection = direction
+                    return@blockTag }
+            }
+            move.notifyBlock(badDirection)
+        }
     }
 }
 
