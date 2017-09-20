@@ -8,8 +8,8 @@ class Tank(override var x: Int, override var y: Int) : Moveable {
 
     override var direction = Directions.UP
     override var speed = 8
-    override var width = Config.block
-    override var height = Config.block
+    override var width = Configs.block
+    override var height = Configs.block
     var badDirection : Directions? = null
 
     override fun draw() {
@@ -40,9 +40,9 @@ class Tank(override var x: Int, override var y: Int) : Moveable {
         }
 
         if(this.x < 0) this.x = 0
-        if(this.x > Config.gameWidth - width) this.x = Config.gameWidth - width
+        if(this.x > Configs.gameWidth - width) this.x = Configs.gameWidth - width
         if(this.y < 0) this.y = 0
-        if(this.y > Config.gameHeight - height) this.y = Config.gameHeight - height
+        if(this.y > Configs.gameHeight - height) this.y = Configs.gameHeight - height
     }
 
     override fun willColilision(block: Blockable): Directions? {
@@ -58,17 +58,41 @@ class Tank(override var x: Int, override var y: Int) : Moveable {
             Directions.RIGHT -> newX += speed
         }
 
-        if ((block.y + block.height <= newY)
+        return if ((block.y + block.height <= newY)
                 || (newY + this.height <= block.y)
                 || (block.x + block.width <= newX)
                 || (newX + this.width <= block.x)) {
-            return null
+            null
         } else {
-            return this.direction
+            this.direction
         }
     }
 
     override fun notifyBlock(direction: Directions?) {
         this.badDirection = direction
+    }
+
+    fun shot() : Bullet {
+        return Bullet(this.direction, { bulletWidth, bulletHeight ->
+            var bulletX = 0
+            var bulletY = 0
+            when (this.direction) {
+                Directions.UP -> {
+                    bulletX = this.x + (this.width - bulletWidth)/2
+                    bulletY = this.y - bulletHeight/2
+                }Directions.DOWN -> {
+                    bulletX = this.x + (this.width - bulletWidth)/2
+                    bulletY = this.y + this.height - bulletHeight/2
+                }Directions.LEFT -> {
+                    bulletX = this.x - bulletWidth/2
+                    bulletY = this.y + (this.height - bulletHeight)/2
+                }Directions.RIGHT -> {
+                    bulletX = this.x + this.width - bulletWidth/2
+                    bulletY = this.y + (this.height - bulletHeight)/2
+                }
+            }
+
+            Pair(bulletX, bulletY)
+        })
     }
 }
