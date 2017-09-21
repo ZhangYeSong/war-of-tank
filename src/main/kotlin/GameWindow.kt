@@ -71,7 +71,7 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
         views.filter { it is Moveable }.forEach { move ->
             move as Moveable
             var badDirection : Directions? = null
-            views.filter { it is Blockable }.forEach blockTag@ { block ->
+            views.filter { (it is Blockable) and (it != move) }.forEach blockTag@ { block ->
                 block as Blockable
                 val direction = move.willColilision(block)
                 direction?.let {
@@ -87,6 +87,13 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
             it.autoMove()
         }
 
+        //自动射击检测
+        views.filter { it is AutoShot }.forEach {
+            it as AutoShot
+            val autoShotView = it.autoShot()
+            autoShotView?.let { views.add(autoShotView) }
+        }
+
         //销毁检测
         views.filter { it is Destroyable }.forEach {
             it as Destroyable
@@ -97,8 +104,8 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
 
         //判断攻击效果
         views.filter { it is Attackable }.forEach { attacker ->
-            views.filter{ it is Sufferable }.forEach suffer@{ suffer ->
-                attacker as Attackable
+            attacker as Attackable
+            views.filter{ (it is Sufferable) and (it != attacker.source) }.forEach suffer@{ suffer ->
                 suffer as Sufferable
                 if (attacker.isExplode(suffer)) {
                     attacker.notifyAttack(suffer)

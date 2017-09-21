@@ -7,7 +7,7 @@ import business.Sufferable
 import org.itheima.kotlin.game.core.Painter
 import sun.security.krb5.Config
 
-class Bullet(override var direction: Directions,
+class Bullet(override var source: View, override var direction: Directions,
              create:(width:Int,height:Int)->Pair<Int,Int>) :
         View, AutoMoveable, Destroyable, Attackable {
     override var x: Int = 0
