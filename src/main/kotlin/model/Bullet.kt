@@ -9,13 +9,14 @@ import sun.security.krb5.Config
 
 class Bullet(override var source: View, override var direction: Directions,
              create:(width:Int,height:Int)->Pair<Int,Int>) :
-        View, AutoMoveable, Destroyable, Attackable {
+        View, AutoMoveable, Destroyable, Attackable, Sufferable {
     override var x: Int = 0
     override var y: Int = 0
     override var width: Int = 0
     override var height: Int = 0
     override var speed: Int = 8
     override var attackPower: Int = 1
+    override var blood: Int = 1
 
     private var imgPath : String
     private var isDestroyed : Boolean = false
@@ -69,6 +70,10 @@ class Bullet(override var source: View, override var direction: Directions,
 
     override fun notifyAttack(suffer: Sufferable) {
         this.isDestroyed = true
+    }
+
+    override fun notifySuffer(attacker: Attackable): Array<View> {
+        return arrayOf(Blast(x, y))
     }
 
 }

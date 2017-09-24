@@ -34,6 +34,8 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
         tank = Tank(10* Configs.block,12* Configs.block)
         views.add(tank)
 
+        views.add(Camp(Configs.gameWidth / 2 - Configs.block, Configs.gameHeight - 96))
+
     }
 
     override fun onDisplay() {
@@ -105,7 +107,7 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
         //判断攻击效果
         views.filter { it is Attackable }.forEach { attacker ->
             attacker as Attackable
-            views.filter{ (it is Sufferable) and (it != attacker.source) }.forEach suffer@{ suffer ->
+            views.filter{ (it is Sufferable) and (it != attacker.source) and (it != attacker) }.forEach suffer@{ suffer ->
                 suffer as Sufferable
                 if (attacker.isExplode(suffer)) {
                     attacker.notifyAttack(suffer)
