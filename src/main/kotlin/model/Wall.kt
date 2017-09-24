@@ -24,4 +24,8 @@ class Wall(override var x: Int, override var y: Int) :
     }
 
     override fun isDestroyable(): Boolean = blood <= 0
+
+    override fun showDestry(): Array<View>? {
+        return null
+    }
 }

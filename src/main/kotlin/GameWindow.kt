@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, height = Configs.gameHeight) {
     private val views = CopyOnWriteArrayList<View>()
     private lateinit var tank : Tank
+    private var gameOver : Boolean = false
 
     override fun onCreate() {
         val file = File(javaClass.getResource("/map/1.map").path)
@@ -43,6 +44,10 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
     }
 
     override fun onKeyPressed(event: KeyEvent) {
+        if (gameOver) {
+            return
+        }
+
         when (event.code) {
             KeyCode.W -> {
                 tank.move(Directions.UP)
@@ -69,6 +74,20 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
     }
 
     override fun onRefresh() {
+        //销毁检测
+        views.filter { it is Destroyable }.forEach {
+            it as Destroyable
+            if (it.isDestroyable()) {
+                views.remove(it)
+                val destry = it.showDestry()
+                destry?.let { views.addAll(destry) }
+            }
+        }
+
+        if (gameOver) {
+            return
+        }
+
         //碰撞检测
         views.filter { it is Moveable }.forEach { move ->
             move as Moveable
@@ -96,14 +115,6 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
             autoShotView?.let { views.add(autoShotView) }
         }
 
-        //销毁检测
-        views.filter { it is Destroyable }.forEach {
-            it as Destroyable
-            if (it.isDestroyable()) {
-                views.remove(it)
-            }
-        }
-
         //判断攻击效果
         views.filter { it is Attackable }.forEach { attacker ->
             attacker as Attackable
@@ -116,6 +127,10 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
                     return@suffer
                 }
             }
+        }
+
+        if (views.filter { it is Camp }.isEmpty()) {
+            gameOver = true
         }
     }
 }

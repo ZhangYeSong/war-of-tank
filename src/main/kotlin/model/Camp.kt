@@ -2,11 +2,12 @@ package model
 
 import business.Attackable
 import business.Blockable
+import business.Destroyable
 import business.Sufferable
 import org.itheima.kotlin.game.core.Painter
 
 class Camp(override var x: Int, override var y: Int) :
-        View, Blockable, Sufferable {
+        View, Blockable, Sufferable, Destroyable {
     override var width: Int = Configs.block*2
     override var height: Int= Configs.block +32
     override var blood: Int = 12
@@ -72,6 +73,22 @@ class Camp(override var x: Int, override var y: Int) :
                     , Blast(x + Configs.block * 2, y + Configs.block + 32))
         }
         return arrayOf()
+    }
+
+    override fun isDestroyable(): Boolean = blood <= 0
+
+    override fun showDestry(): Array<View>? {
+        return arrayOf(Blast(x - 32, y - 32)
+                , Blast(x, y - 32)
+                , Blast(x + 32, y - 32)
+
+                , Blast(x - 32, y)
+                , Blast(x, y)
+                , Blast(x + 32, y)
+
+                , Blast(x - 32, y + 32)
+                , Blast(x, y + 32)
+                , Blast(x + 32, y + 32))
     }
 
 }

@@ -22,4 +22,8 @@ class Blast(override var x: Int, override var y: Int) : View, Destroyable {
     override fun isDestroyable(): Boolean {
         return cursor > 32
     }
+
+    override fun showDestry(): Array<View>? {
+        return null
+    }
 }

@@ -76,4 +76,8 @@ class Bullet(override var source: View, override var direction: Directions,
         return arrayOf(Blast(x, y))
     }
 
+    override fun showDestry(): Array<View>? {
+        return null
+    }
+
 }

@@ -119,4 +119,8 @@ class Enemy(override var x: Int, override var y: Int) :
         return blood <= 0
     }
 
+    override fun showDestry(): Array<View>? {
+        return null
+    }
+
 }
