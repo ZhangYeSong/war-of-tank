@@ -4,17 +4,26 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import model.*
 import org.itheima.kotlin.game.core.Window
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
 import java.util.concurrent.CopyOnWriteArrayList
 
 class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, height = Configs.gameHeight) {
     private val views = CopyOnWriteArrayList<View>()
     private lateinit var tank : Tank
     private var gameOver : Boolean = false
+    private var enemyTotalSize = 12
+    private var enemyActiveSize = 6
+    private var enemyBornLocation = arrayListOf<Pair<Int,Int>>()
+    private var bornIndex = 0
 
     override fun onCreate() {
-        val file = File(javaClass.getResource("/map/1.map").path)
-        val lines = file.readLines()
+        //val file = File(javaClass.getResource("/map/1.map").path)
+        val resourceAsStream = javaClass.getResourceAsStream("/map/1.map")
+        val reader = BufferedReader(InputStreamReader(resourceAsStream, "utf-8"))
+
+        val lines = reader.readLines()
 
         var lineNumber = 0
         lines.forEach { line ->
@@ -25,7 +34,7 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
                     '铁' -> views.add(Steel(columnNumber* Configs.block,lineNumber* Configs.block))
                     '草' -> views.add(Grass(columnNumber* Configs.block,lineNumber* Configs.block))
                     '水' -> views.add(Water(columnNumber* Configs.block,lineNumber* Configs.block))
-                    '敌' -> views.add(Enemy(columnNumber* Configs.block,lineNumber* Configs.block))
+                    '敌' -> enemyBornLocation.add(Pair(columnNumber* Configs.block,lineNumber* Configs.block))
                 }
                 columnNumber++
             }
@@ -77,8 +86,13 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
         //销毁检测
         views.filter { it is Destroyable }.forEach {
             it as Destroyable
+
+
             if (it.isDestroyable()) {
                 views.remove(it)
+                if (it is Enemy) {
+                    enemyTotalSize --
+                }
                 val destry = it.showDestry()
                 destry?.let { views.addAll(destry) }
             }
@@ -129,8 +143,14 @@ class GameWindow : Window(title = "坦克大战", width = Configs.gameWidth, hei
             }
         }
 
-        if (views.filter { it is Camp }.isEmpty()) {
+        if((views.filter { it is Camp }.isEmpty()) or (enemyTotalSize <= 0)){
             gameOver = true
+        }
+
+        if ((views.filter { it is Enemy }.size < enemyActiveSize) and (enemyTotalSize > 0)) {
+            val pair = enemyBornLocation.get(bornIndex % enemyBornLocation.size)
+            views.add(Enemy(pair.first, pair.second))
+            bornIndex ++
         }
     }
 }
